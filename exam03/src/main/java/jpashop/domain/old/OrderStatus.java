@@ -1,13 +1,12 @@
-package jpashop.domain;
+package jpashop.domain.old;
 
 /**
  * packageName : jpashop.domain
  * fileName : OrderStatus
  * author : haedoang
- * date : 2021/11/09
+ * date : 2021-11-09
  * description :
  */
 public enum OrderStatus {
-
     ORDER, CANCLE
 }

@@ -2,74 +2,32 @@ package jpashop.domain;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
 
 /**
  * packageName : jpashop.domain
- * fileName : Order
+ * fileName : Orders
  * author : haedoang
- * date : 2021-11-09
+ * date : 2021/11/09
  * description :
  */
 @Entity
-@Table(name = "ORDERS")
+@Table(name = "Orders")
 public class Order {
-    @Id @GeneratedValue(strategy = GenerationType.AUTO)
+
+    @Id @GeneratedValue
     @Column(name = "ORDER_ID")
     private Long id;
-
     private LocalDateTime orderDate;
-
-    @Enumerated(EnumType.STRING)
     private OrderStatus status;
 
-    //연관관계 매핑 외래키를 갖는 쪽이 주인이다.
+    //연관관계 매핑은 외래키가 있는쪽에 설정하자~
     @ManyToOne
     @JoinColumn(name = "MEMBER_ID")
     private Member member;
 
-    @OneToMany(mappedBy = "order")
-    private List<OrderItem> orderItems = new ArrayList<>();
+    //1대1 외래키 단방향
+    @OneToOne
+    @JoinColumn(name = "DELIVERY_ID")
+    private Delivery delivery;
 
-    public List<OrderItem> getOrderItems() {
-        return orderItems;
-    }
-
-    public void setOrderItems(List<OrderItem> orderItems) {
-        this.orderItems = orderItems;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getOrderDate() {
-        return orderDate;
-    }
-
-    public void setOrderDate(LocalDateTime orderDate) {
-        this.orderDate = orderDate;
-    }
-
-    public OrderStatus getStatus() {
-        return status;
-    }
-
-    public void setStatus(OrderStatus status) {
-        this.status = status;
-    }
-
-    public Member getMember() {
-        return member;
-    }
-
-    public void setMember(Member member) {
-        this.member = member;
-    }
 }

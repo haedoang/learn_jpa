@@ -7,20 +7,19 @@ import javax.persistence.Id;
 
 /**
  * packageName : jpashop.domain
- * fileName : Member
+ * fileName : Delivery
  * author : haedoang
  * date : 2021/11/09
  * description :
  */
 @Entity
-public class Member {
+public class Delivery {
     @Id @GeneratedValue
-    @Column(name = "MEMBER_ID")
+    @Column(name = "DELIVERY_ID")
     private Long id;
-
-    private String name;
     private String city;
-    private String street;
     private String zipcode;
+    private String street;
+    private DeliveryStatus status;
 
 }

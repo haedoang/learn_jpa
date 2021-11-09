@@ -23,6 +23,17 @@ public class JpaMain {
             tx.begin();
 
 
+//            Order order = new Order();
+//            order.setStatus(OrderStatus.ORDER);
+//            em.persist(order);
+//
+//            Member m = new Member();
+//            m.setName("memberA");
+//            m.getOrders().add(order);
+//            em.persist(m);
+
+
+
             tx.commit();
         } catch(Exception e) {
             tx.rollback();

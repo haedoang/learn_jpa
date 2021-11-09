@@ -2,16 +2,20 @@
 
 
 ### 1.다대일 [N : 1]
-- #### 다대일 단방향
+- #### 다대일 단방향 
+  ![image info](./Nto1_OneWay.png)
   - 가장 많이 사용하는 연관관계
+  
 
 - #### 다대일 양방향
-  - 외래키가 있는 쪽이 연관관계의 주인
+  ![image info](./Nto1_Bidirectional.png)
+  - 외래키가 있는 쪽이 연관관계의 주인 (반대는 읽기만 가능, mappedBy)
   - 양쪽을 서로 참조하도록 개발
   - 다대일로 구현하고 필요한 경우 사용
 
 ### 2. 일대다 [1 : N] 
 - #### 일대다 단방향(안쓰는걸 추천, 다대일 양방향 매핑을 사용하자)
+  ![image info](./1toN_OneWay.png)
   - 일(1)이 연관관계의 주인
   - 테이블 일대다 관계는 항상 다(N)쪽에 외래키가 있음
   - 객체와 테이블 차이 떄문에 반대편 테이블의 외래키를 관리하는 구조
@@ -20,6 +24,7 @@
   - 연관관계 관리를 위해 추가로 UPDATE SQL 실행
   
 - #### 일대다 양방향(안쓰는걸 추천, 다대일 양방향 매핑을 사용하자)
+  ![image info](./1toN_Bidirectional.png)
   - 공식적으로 존재하지 않음.
   - @JoinColumn(insertable=false, updateable=false)
   - 읽기 전용 필드를 사용해서 양방향 처럼 사용하는 방법
@@ -33,16 +38,20 @@
   - 외래 키에 데이터베이스 유니크(UNI) 제약조건 추가
 
   - #### 주테이블에 외래키 단뱡향 
+    ![image info](./MainTableFKOneWay.png)
     - 다대일 단방향과 유사함
     
   - #### 주테이블에 외래키 양방향 
+    ![image info](./MainTableFKBidirectional.png)
     - 다대일 양방향 매핑처럼 외래키가 있는 곳이 연관관계 주인
     - 반대편에 mappedBy 적용
     
   - #### 대상 테이블에 외래키 단방향(X)
+    ![image info](./TargetTableFKOneWay.png)
     - JPA 지원하지않음
     
   - #### 대상 테이블에 외래키 양방향
+    ![image info](./TargetTableFKBidirectional.png)
     - 일대일 주 테이블에 외래키 양방향과 매핑 방법이 같음 
     
   - #### 주 테이블에 외래키 정리
@@ -64,3 +73,11 @@
  - @ManyToMany, @JoinTable
  - 실무 사용 X 
  - => 연결 테이블용 엔티티 추가해서 사용
+
+
+## 연관관계 매핑 예제3 - 다양한 연관관계 매핑
+
+### 엔티티 구조
+![image info](./image.png)
+![image info](./image2.png)
+(출처 : 자바 ORM 표준 JPA 프로그래밍 - 기본편 실전 예제3)
