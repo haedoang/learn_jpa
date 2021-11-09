@@ -8,7 +8,7 @@ import javax.persistence.Persistence;
 import java.util.List;
 
 /**
- * packageName : PACKAGE_NAME
+ * packageName :
  * fileName : Main
  * author : haedoang
  * date : 2021/11/08

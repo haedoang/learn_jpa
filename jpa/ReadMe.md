@@ -112,3 +112,74 @@
  - 즉시 로딩은 JPQL에서 N+1 문제를 일으킨다
  - @ManyToOne, @OneToOne은 기본이 즉시로딩 => LAZY로 변경할 것
  - @OneToMany, @ManyToMany는 기본이 지연로딩
+
+
+
+## 객체지향 쿼리
+
+### JPQL(Java Persistence Query Language) - 객체 지향 SQL
+ - 가장 단순한 조회 방법
+ - EntityManager.find()
+ - 객체 그래프 탐색({a.getB().getC())
+ - JPA를 사용하면 엔티티 객체를 중심으로 개발
+ - 검색 쿼리 시 엔티티 객체를 대상으로 검색함 
+ - 모든 DB 데이터를 객체로 변환하여 검색하는 것은 불가능
+ - 애플리케이션이 필요한 데이터만 DB에서 불러오려면 검색 조건의 SQL이 필요
+ - JPA는 SQL을 추상화한 JPQL이라는 쿼리를 제공함
+ - 테이블이 아닌 객체를 대상으로 검색하는 객체 지향 쿼리, SQL 의존하지 않음
+ - from 절에 들어가는게 객체, 엔티티 이름을 사용(테이블 이름이 아님)
+ - 별칭(alias)는 필수
+ - query.getResultList() : 결과가 하나 이상
+ - query.getSingleResult() : 결과가 하나
+  
+ - ###프로젝션 
+    - Select m.team From member m -> 엔티티 프로젝션(Team 객체를 반환)
+    - new 명령어 : 단순 값을 DTO로 바로 조회 
+      - Select new common.UserDto(m.username, m.age) from Member m
+    - Distinct는 중복 제거
+   
+ - ### 페이징API
+   - setFirstResult()
+   - setMaxResults()
+   - 데이터 베이스 별 방언으로 변환
+
+ - ### 조인
+   - 내부 조인 : Select m From Member m Join m.team t
+   - 외부 조인 : Select m From Member m LEFT Join m.team t
+   - 세타 조인 : select count(m) from Member m, Team t where m.username = t.name
+   - 페치 조인 : 엔티티 객체 그래프를 한번에 조회하는 방법
+      - 별칭을 사용할 수 없다.
+      - JQPL : select m from Member m join fetch m.team
+      - SQL : SELECT M.*,T.* FROM MEMBER M INNER JOIN TEAM T ON M.TEAM_ID = T.ID
+
+ - ### Named 쿼리 - 어노테이션 
+   - 어플리케이션 로딩 시점에 쿼리를 작성함
+   - 문법의 오류를 컴파일 시 확인할 수 있음
+ 
+## Spring DataJPA & QueryDSL
+
+### 스프링 데이터 JPA 
+ - 반복되는 CRUD 문제를 세련된 방법으로 해결
+ - 개발자는 인터페이스만 작성
+ - 스프링 데이터 JPA가 구현 객체를 동적으로 생성해서 주입
+ - JpaRepository interface 구현 (스프링 데이터 JPA) 
+   - save(), findOne(), findAll()....
+ - 메서드 이름으로 JPQL 쿼리를 생성
+ - 이름으로 검색 + 정렬 + 페이징
+ - @Query 
+
+ - ### 반환 타입 
+   - 컬렉션, 단건
+   
+ - ### 도메인 클래스 컨버터
+   - 컨트롤러에서 식별자로 도메인 클래스 찾음
+   
+### QueryDSL
+ - 문자가 아닌 코드로 작성
+ - 컴파일 시점에 문법 오류 발견
+ - 코드 자동완성(IDE)
+ - 단순하고 쉬움 
+ - 동적 쿼리
+
+ - ### 동작원리 쿼리타입 생성
+   - @Entity Member.java => APT => QMember.java
