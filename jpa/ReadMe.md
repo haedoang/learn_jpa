@@ -1,5 +1,28 @@
+# JPA 
+
+#### JPA에서 제공하는 테이블 생성 기능 hibernate.hbm2ddl.auto 
+- create : DROP + CREATE
+- create-drop : create와 같으나 종료 시점에 DROP
+- update : 변경분만 반영(운영DB에서 사용하면 안됨)
+- validate : 엔티티와 테이블 매핑용되었는지만 확인
+- none : 
+
+#### 식별자 매핑 방법
+- @Id 직접 매핑
+- IDENTITY : 데이터베이스에 위임
+- SEQUENCE : 데이터베이스 시퀀스 오브젝트 사용, ORACLE (@SequenceGenerator 필요)
+- TABLE : 키생성용 테이블 사용, 모든 DB에서 사용 (@TableGenerator 필요)
+- AUTO : 방언에 따라 자동 지정, 기본값 
+
+#### 권장하는 식별자 전략
+- 기본키 제약 조건 : null 아님, 유일, 변하면 안된다.
+- 미래까지 조건을 만족하는 자연키를 찾기 어렵다. 대리키(대체키)를 사용하자
+- 권장 : Long + 대체키 + 키 생성전략 사용
+
 ## 양방향 매핑
+
 ### 연관관계의 주인(Owner)
+
 #### 양방향 매핑 규칙
  - 객체의 두 관계 중 하나를 연관관계의 주인으로 지정
  - 연관관계의 주인만이 외래 키를 관리(등록, 수정)
