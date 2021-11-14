@@ -1,6 +1,5 @@
-package jpashop.domain;
+package jpashop.domain.old;
 
-import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
@@ -14,7 +13,7 @@ import java.util.List;
  * date : 2021/11/11
  * description :
  */
-@Entity
+//@Entity
 public class Team {
     @Id
     @GeneratedValue
@@ -22,7 +21,7 @@ public class Team {
 
     private String name;
 
-    @OneToMany(mappedBy = "team")
+    @OneToMany(mappedBy = "team") //기본이 EAGER
     private List<Member> members = new ArrayList<>();
 
     public Long getId() {

@@ -51,7 +51,7 @@
 
 ## 실전 예제4 - 상속관계 매핑
 
-###요구사항
+### 요구사항
 ![image info](./image.png)
 ![image info](./image2.png)
 ![image info](./image3.png)

@@ -18,7 +18,9 @@ public class Team {
     private Long id;
     private String name;
 
-    @OneToMany(mappedBy = "team") //연관관계의 주인이 아니야~
+    //@OneToMany(mappedBy = "team") //연관관계의 주인이 아니야~
+    @OneToMany
+    @JoinColumn(name = "MEMBER_ID")
     List<Member> members = new ArrayList<>();
 
     public List<Member> getMembers() {

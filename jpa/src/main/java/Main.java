@@ -24,15 +24,19 @@ public class Main {
             tx.begin();
             Team team = new Team();
             team.setName("teamA");
-            em.persist(team);
-
 
             Member member = new Member();
             member.setName("memberA");
-            //member.setTeam(team);
-            team.getMembers().add(member);
-            em.persist(member);
+            member.setTeam(team);
 
+            team.getMembers().add(member);
+            em.persist(team);
+
+            em.flush();
+            em.clear();
+
+            Team team1 = em.find(Team.class, team.getId());
+            System.out.println(team1.getMembers());
 
 
             tx.commit();
