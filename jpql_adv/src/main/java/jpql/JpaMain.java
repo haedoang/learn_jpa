@@ -97,12 +97,15 @@ public class JpaMain {
             // N + 1 문제 발생, 즉시로딩, 지연로딩 상관없이.. 발생함..
 
             //컬렉션 페치 조인 distinct로 줄여줄 수 있음.
-            String query = "select distinct t From Team t join fetch t.members";
-            List<Team> resultList = em.createQuery(query, Team.class).getResultList();
+            String query = "select t From Team t";
+            List<Team> resultList = em.createQuery(query, Team.class)
+                    .setFirstResult(0)
+                    .setMaxResults(2)
+                    .getResultList();
 
             System.out.println("resultList.size() = " + resultList.size());
             for (Team team : resultList) {
-                System.out.println("team.getName() = " + team.getName() + "|members" + team.getMembers().size());
+                System.out.println("team.getName() = " + team.getName() + "|members = " + team.getMembers().size());
                 for ( Member member : team.getMembers()) {
                     System.out.println(" >>> member = " + member);
                 }

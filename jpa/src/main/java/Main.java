@@ -29,14 +29,18 @@ public class Main {
             member.setName("memberA");
             member.setTeam(team);
 
-            team.getMembers().add(member);
-            em.persist(team);
+            //team.getMembers().add(member);
+            //em.persist(team);
+
+            em.persist(member);
 
             em.flush();
             em.clear();
 
-            Team team1 = em.find(Team.class, team.getId());
-            System.out.println(team1.getMembers());
+//            Team team1 = em.find(Team.class, team.getId());
+//            System.out.println(team1.getMembers());
+            Member findMember = em.find(Member.class, member.getId());
+            System.out.println(findMember.getTeam().getName());
 
 
             tx.commit();
