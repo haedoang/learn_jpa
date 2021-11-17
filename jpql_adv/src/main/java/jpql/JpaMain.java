@@ -97,20 +97,55 @@ public class JpaMain {
             // N + 1 문제 발생, 즉시로딩, 지연로딩 상관없이.. 발생함..
 
             //컬렉션 페치 조인 distinct로 줄여줄 수 있음.
-            String query = "select t From Team t";
-            List<Team> resultList = em.createQuery(query, Team.class)
-                    .setFirstResult(0)
-                    .setMaxResults(2)
-                    .getResultList();
+//            String query = "select t From Team t";
+//            List<Team> resultList = em.createQuery(query, Team.class)
+//                    .setFirstResult(0)
+//                    .setMaxResults(2)
+//                    .getResultList();
+//
+//            System.out.println("resultList.size() = " + resultList.size());
+//            for (Team team : resultList) {
+//                System.out.println("team.getName() = " + team.getName() + "|members = " + team.getMembers().size());
+//                for ( Member member : team.getMembers()) {
+//                    System.out.println(" >>> member = " + member);
+//                }
+//            }
 
-            System.out.println("resultList.size() = " + resultList.size());
-            for (Team team : resultList) {
-                System.out.println("team.getName() = " + team.getName() + "|members = " + team.getMembers().size());
-                for ( Member member : team.getMembers()) {
-                    System.out.println(" >>> member = " + member);
-                }
-            }
+            //엔티티 직접 사용하기 - 기본키 - PK
+//            String query = "select m from Member m where m = :member";
+//            Member findMember = em.createQuery(query, Member.class)
+//                    .setParameter("member", member1)
+//                    .getSingleResult();
+//
+//            System.out.println(findMember);
 
+            //엔티티 직접 사용하기 외래키 - PK
+//            String query = "select m from Member m where m.team = :team";
+//            List<Member> resultList = em.createQuery(query, Member.class)
+//                    .setParameter("team" , team1).getResultList();
+//
+//            resultList.forEach(System.out::println);
+
+            //NamedQuery
+//            List<Member> resultList = em.createNamedQuery("Member.findByUsername", Member.class)
+//                    .setParameter("username", member1.getUsername()).getResultList();
+//
+//            resultList.forEach(System.out::println);
+
+            //FLUSH
+            //벌크 연산
+            int resultCount = em.createQuery("update Member m set m.age = 20")
+                    .executeUpdate();
+            System.out.println("resultCount = " + resultCount);
+            //데이터 정확성이안맞음..  벌크 연산에서 flush를 수행했지만 member 1~3 은 age 0 값을 가지고 있음 
+//            System.out.println("member1.getAge() = " + member1.getAge());
+//            System.out.println("member2.getAge() = " + member2.getAge());
+//            System.out.println("member3.getAge() = " + member3.getAge());
+            
+            //새로 가져오려면 em.clear()
+            em.clear();
+            Member findMember = em.find(Member.class, member1.getId());
+            System.out.println("findMember.getAge() = " + findMember.getAge());
 
             tx.commit();
         } catch (Exception e) {
