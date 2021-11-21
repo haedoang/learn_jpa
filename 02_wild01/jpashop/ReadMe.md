@@ -28,3 +28,7 @@
   - 물리명 적용 : 
     - `spring.jpa.hibernate.naming.physical-strategy` : 모든 논리명에 적용
   
+- #### In-Memory Database 사용법 
+  - https://h2database.com/html/cheatSheet.html : `jdbc:h2:mem:test`
+  - 스프링 부트의 경우 아무 설정도 하지 않으면 In-Memory 방식으로 동작한다 
+  
