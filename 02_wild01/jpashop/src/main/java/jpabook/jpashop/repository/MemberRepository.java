@@ -1,4 +1,4 @@
-package jpabook.jpashop.domain.repository;
+package jpabook.jpashop.repository;
 
 import jpabook.jpashop.domain.Member;
 import lombok.RequiredArgsConstructor;
@@ -8,7 +8,7 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * packageName : jpabook.jpashop.domain.repository
+ * packageName : jpabook.jpashop.repository
  * fileName : MemberRepository
  * author : haedoang
  * date : 2021/11/21
