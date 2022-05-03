@@ -35,7 +35,6 @@ public class MemberService {
     }
 
     // 회원 전체 조회
-
     public List<Member> findMembers() {
         return memberRepository.findAll();
     }
@@ -51,5 +50,11 @@ public class MemberService {
         if (!members.isEmpty()) {
             throw new IllegalArgumentException("이미 존재하는 회원입니다.");
         }
+    }
+
+    @Transactional
+    public void update(Long id, String name) {
+        Member member = findOne(id);
+        member.setName(name);
     }
 }
