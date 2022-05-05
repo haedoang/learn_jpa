@@ -2,6 +2,7 @@ package io.haedoang.querydsl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.haedoang.querydsl.entity.Member;
@@ -403,4 +404,39 @@ public class QuerydslBasicTest {
         assertThat(result).hasSize(4);
         assertThat(result).extracting(it -> it.get(1, Double.class)).contains(25.0);
     }
+
+    @Test
+    @DisplayName("조건문: case")
+    public void basicCase() {
+        // when
+        final List<String> result = queryFactory
+                .select(member.age
+                        .when(10).then("열살")
+                        .when(20).then("스무살")
+                        .otherwise("기타")
+                )
+                .from(member)
+                .fetch();
+
+        // then
+        assertThat(result).containsExactly("열살", "스무살", "기타", "기타");
+    }
+
+    @Test
+    @DisplayName("caseBuilder")
+    public void caseBuilder() {
+        // when
+        final List<String> result = queryFactory
+                .select(
+                        new CaseBuilder()
+                                .when(member.age.between(0, 20)).then("0~20살")
+                                .otherwise("기타")
+                )
+                .from(member)
+                .fetch();
+
+        // then
+        assertThat(result).containsExactly("0~20살", "0~20살", "기타", "기타");
+    }
 }
+
