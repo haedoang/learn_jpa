@@ -2,10 +2,14 @@ package io.haedoang.querydsl;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
+import com.querydsl.core.types.ExpressionUtils;
+import com.querydsl.core.types.Projections;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import io.haedoang.querydsl.dto.MemberDto;
+import io.haedoang.querydsl.dto.UserDto;
 import io.haedoang.querydsl.entity.Member;
 import io.haedoang.querydsl.entity.QMember;
 import io.haedoang.querydsl.entity.Team;
@@ -503,6 +507,81 @@ public class QuerydslBasicTest {
                 .containsExactly(10, 20, 30, 40);
     }
 
+    @Test
+    @DisplayName("dto로 조회방법1. new 명령어 사용")
+    public void findDtoBYJPQL() {
+        // when
+        final List<MemberDto> resultList =
+                em.createQuery("select new io.haedoang.querydsl.dto.MemberDto(m.username, m.age) from Member m", MemberDto.class)
+                        .getResultList();
 
+        // then
+        assertThat(resultList).extracting("username").containsExactly("member1", "member2", "member3", "member4");
+        assertThat(resultList).extracting("age").containsExactly(10, 20, 30, 40)
+                .as("패키지명을 다 기입해야하는 단점이 있단");
+    }
+
+    @Test
+    @DisplayName("dto로 조회방법2. setter를 사용")
+    public void findDtoBySetter() {
+        // when
+        final List<MemberDto> result = queryFactory.select(Projections.bean(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+
+        // then
+        assertThat(result).extracting("username").containsExactly("member1", "member2", "member3", "member4");
+        assertThat(result).extracting("age").containsExactly(10, 20, 30, 40);
+    }
+
+    @Test
+    @DisplayName("dto로 조회방법3. field 사용")
+    public void findDtoByField() {
+        // when
+        final List<MemberDto> result = queryFactory.select(Projections.fields(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+
+        // then
+        assertThat(result).extracting("username").containsExactly("member1", "member2", "member3", "member4");
+        assertThat(result).extracting("age").containsExactly(10, 20, 30, 40);
+    }
+
+    @Test
+    @DisplayName("dto로 조회방법4. constructor 사용")
+    public void findDtoByConstructor() {
+        // when
+        final List<MemberDto> result = queryFactory.select(Projections.constructor(MemberDto.class, member.username, member.age))
+                .from(member)
+                .fetch();
+
+        // then
+        assertThat(result).extracting("username").containsExactly("member1", "member2", "member3", "member4");
+        assertThat(result).extracting("age").containsExactly(10, 20, 30, 40);
+    }
+
+    @Test
+    @DisplayName("프로퍼티명이 다른 경우 해결 방법: 1)as 2) ExpressionUtils")
+    public void asAndExpressionUtils() {
+        //given
+        final QMember memberSub = new QMember("memberSub");
+
+        // when
+        final List<UserDto> result = queryFactory.select(
+                        Projections.fields(
+                                UserDto.class,
+                                member.username.as("name"),
+                                ExpressionUtils.as(
+                                        JPAExpressions
+                                                .select(memberSub.age.max())
+                                                .from(memberSub), "age"
+                                )))
+                .from(member)
+                .fetch();
+
+        // then
+        assertThat(result).extracting("name").containsExactly("member1", "member2", "member3", "member4");
+        assertThat(result).extracting("age").contains(40);
+    }
 }
 
