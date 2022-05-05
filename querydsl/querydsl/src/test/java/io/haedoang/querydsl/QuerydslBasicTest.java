@@ -3,6 +3,7 @@ package io.haedoang.querydsl;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.CaseBuilder;
+import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.haedoang.querydsl.entity.Member;
@@ -437,6 +438,32 @@ public class QuerydslBasicTest {
 
         // then
         assertThat(result).containsExactly("0~20살", "0~20살", "기타", "기타");
+    }
+
+    @Test
+    @DisplayName("constant 상수 출력")
+    public void constant() {
+        // when
+        final List<Tuple> result = queryFactory.select(member.username, Expressions.constant("A"))
+                .from(member)
+                .fetch();
+
+        // then
+        assertThat(result).extracting(it -> it.get(1, String.class)).contains("A");
+    }
+
+    @Test
+    @DisplayName("concat 문자열 합치기")
+    public void concat() {
+        // when
+        final String result = queryFactory
+                .select(
+                        member.username.concat("_").concat(member.age.stringValue()))
+                .from(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+        // then
+        assertThat(result).isEqualTo("member1_10");
     }
 }
 
