@@ -465,5 +465,44 @@ public class QuerydslBasicTest {
         // then
         assertThat(result).isEqualTo("member1_10");
     }
+
+    @Test
+    @DisplayName("projection: simple")
+    public void simpleProjection() {
+        // when
+        final String result = queryFactory
+                .select(member.username)
+                .from(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        // then
+        assertThat(result).isEqualTo("member1");
+    }
+
+    @Test
+    @DisplayName("projection: tuple")
+    public void tupleProjection() {
+        // when
+        final List<Tuple> result = queryFactory
+                .select(member.username, member.age)
+                .from(member)
+                .fetch();
+
+        // then
+        for (Tuple tuple : result) {
+            final String username = tuple.get(member.username);
+            final Integer age = tuple.get(member.age);
+            System.out.println("username = " + username);
+            System.out.println("age = " + age);
+        }
+
+        assertThat(result).extracting(it -> it.get(0, String.class))
+                .containsExactly("member1", "member2", "member3", "member4");
+        assertThat(result).extracting(it -> it.get(1, Integer.class))
+                .containsExactly(10, 20, 30, 40);
+    }
+
+
 }
 
