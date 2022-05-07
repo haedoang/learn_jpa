@@ -1,14 +1,17 @@
 package io.haedoang.querydsl;
 
+import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.ExpressionUtils;
 import com.querydsl.core.types.Projections;
+import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.haedoang.querydsl.dto.MemberDto;
+import io.haedoang.querydsl.dto.QMemberDto;
 import io.haedoang.querydsl.dto.UserDto;
 import io.haedoang.querydsl.entity.Member;
 import io.haedoang.querydsl.entity.QMember;
@@ -485,7 +488,7 @@ public class QuerydslBasicTest {
     }
 
     @Test
-    @DisplayName("projection: tuple")
+    @DisplayName("projection: tuple(repository) 레벨에서 사용을 권장")
     public void tupleProjection() {
         // when
         final List<Tuple> result = queryFactory
@@ -551,7 +554,14 @@ public class QuerydslBasicTest {
     @DisplayName("dto로 조회방법4. constructor 사용")
     public void findDtoByConstructor() {
         // when
-        final List<MemberDto> result = queryFactory.select(Projections.constructor(MemberDto.class, member.username, member.age))
+        final List<MemberDto> result = queryFactory.select(
+                        Projections.constructor(
+                                MemberDto.class,
+                                member.username,
+                                member.age
+                                //,member.id 런타임 시점에서 오류가 발생함 (@QueryProjection 과 차이)
+                        )
+                )
                 .from(member)
                 .fetch();
 
@@ -582,6 +592,119 @@ public class QuerydslBasicTest {
         // then
         assertThat(result).extracting("name").containsExactly("member1", "member2", "member3", "member4");
         assertThat(result).extracting("age").contains(40);
+    }
+
+    @Test
+    @DisplayName("queryProjection :: @QueryProjection 사용")
+    public void queryProjection() {
+        // when
+        final MemberDto result = queryFactory.select(new QMemberDto(member.username, member.age))
+                .from(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        // then
+        assert result != null;
+        assertThat(result.getUsername()).isEqualTo("member1");
+        assertThat(result.getAge()).isEqualTo(10)
+                .as("typeSafety 하다, compile 시점에서 오류를 검증할 수 있는 장점")
+                .as("단점1) Dto가 queryDsl에 의존 관계를 가지게 된다");
+    }
+
+    @Test
+    @DisplayName("중복 처리: distinct")
+    public void distinct() {
+        // given
+        em.persist(new Member("member1", 50));
+
+        // when
+        final String result = queryFactory
+                .select(member.username).distinct()
+                .from(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        // then
+        assertThat(result).isEqualTo("member1");
+    }
+
+    @Test
+    @DisplayName("동적쿼리 : booleanBuilder")
+    public void booleanBuilder() {
+        // given
+        String usernameParam = "member1";
+        Integer ageParam = 10;
+
+        // when
+        List<Member> result = searchMember1(usernameParam, ageParam);
+
+        // then
+        assertThat(result).hasSize(1);
+    }
+
+    @Test
+    @DisplayName("동적쿼리 : whereParam")
+    public void whereParam() {
+        // given
+        String usernameParam = "member1";
+        Integer ageParam = 10;
+
+        // when
+        List<Member> result = searchMember2(usernameParam, ageParam);
+
+        // then
+        assertThat(result).hasSize(1);
+    }
+
+    /**
+     * 1) BooleanBuilder
+     *
+     * @param usernameCond
+     * @param ageCond
+     * @return
+     */
+    private List<Member> searchMember1(String usernameCond, Integer ageCond) {
+        BooleanBuilder booleanBuilder = new BooleanBuilder();
+
+        if (usernameCond != null) {
+            booleanBuilder.and(member.username.eq(usernameCond));
+        }
+
+        if (ageCond != null) {
+            booleanBuilder.and(member.age.eq(ageCond));
+        }
+
+        return queryFactory
+                .selectFrom(member)
+                .where(booleanBuilder)
+                .fetch();
+    }
+
+    /**
+     * 2) whereParam
+     *
+     * @param usernameCond
+     * @param ageCond
+     * @return
+     */
+    private List<Member> searchMember2(String usernameCond, Integer ageCond) {
+        return queryFactory
+                .selectFrom(member)
+                .where(allEq(usernameCond, ageCond))
+                .fetch();
+    }
+
+    private BooleanExpression usernameEq(String usernameCond) {
+        return usernameCond != null ? member.username.eq(usernameCond) : null;
+    }
+
+    private BooleanExpression ageEq(Integer ageCond) {
+        return ageCond != null ? member.age.eq(ageCond) : null;
+    }
+
+    /** 조합 가능 표현식 ==> 재사용성 용이 */
+    private BooleanExpression allEq(String usernameCond, Integer ageCond) {
+        return usernameEq(usernameCond).and(ageEq(ageCond));
     }
 }
 
