@@ -702,9 +702,111 @@ public class QuerydslBasicTest {
         return ageCond != null ? member.age.eq(ageCond) : null;
     }
 
-    /** 조합 가능 표현식 ==> 재사용성 용이 */
+    /**
+     * 조합 가능 표현식 ==> 재사용성 용이
+     */
     private BooleanExpression allEq(String usernameCond, Integer ageCond) {
         return usernameEq(usernameCond).and(ageEq(ageCond));
+    }
+
+    @Test
+    //@Commit
+    @DisplayName("벌크 연산")
+    public void bulkUpdate1() {
+        // when
+        final long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        // then
+        final Member result = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(10))
+                .fetchOne();
+
+
+        assert result != null;
+        assertThat(result.getUsername()).isEqualTo("member1");
+        assertThat(count).isEqualTo(2)
+                .as("벌크 연산은 영속성 컨텍스트를 무시하고 DB에 즉시 반영하기 때문에 데이터 일관성이 꺠질 수 있다");
+    }
+
+    @Test
+    //@Commit
+    @DisplayName("벌크 연산 시 영속성 컨텍스트를 비워두어야 한다")
+    public void bulkUpdate2() {
+        // when
+        final long count = queryFactory
+                .update(member)
+                .set(member.username, "비회원")
+                .where(member.age.lt(28))
+                .execute();
+
+        em.flush();
+        em.clear();
+
+        // then
+        final Member result = queryFactory
+                .selectFrom(member)
+                .where(member.age.eq(10))
+                .fetchOne();
+
+        assert result != null;
+        assertThat(result.getUsername()).isEqualTo("비회원");
+        assertThat(count).isEqualTo(2)
+                .as("벌크 연산 후 영속성 컨텍스트를 비워주어 데이터 일관성을 유지해야 한다");
+    }
+
+    @Test
+    @DisplayName("bulk add, multiply, delete 연산 기능을 제공한다")
+    public void bulkAdd() {
+        // when
+        final long count = queryFactory
+                .update(member)
+                .set(member.age, member.age.add(1))
+                .execute();
+
+        // then
+        em.flush();
+        em.clear();
+
+        final List<Member> result = queryFactory.selectFrom(member)
+                .fetch();
+
+        assertThat(result).extracting("age").containsExactly(11, 21, 31, 41);
+    }
+
+    @Test
+    @DisplayName("")
+    public void sqlFunction() {
+        // when
+        final List<String> result = queryFactory
+                .select(
+                        Expressions.stringTemplate("function('replace',{0}, {1}, {2})",
+                                member.username, "member", "M"))
+                .from(member)
+                .fetch();
+
+        // then
+        assertThat(result).containsExactly("M1", "M2", "M3", "M4")
+        .as("org.hibernate.dialect.H2Dialect 에 등록되어야 함");
+    }
+
+    @Test
+    @DisplayName("")
+    public void sqlFunction2() {
+        // when
+        final List<String> result = queryFactory
+                .select(member.username)
+                .from(member)
+                //.where(member.username.eq(Expressions.stringTemplate("function('lower', {0})", member.username)))
+                .where(member.username.eq(member.username.lower())) // 기본적으로 제공해주는 lower 함수
+                .fetch();
+
+        // then
+        assertThat(result).containsExactly("member1", "member2", "member3", "member4");
     }
 }
 
