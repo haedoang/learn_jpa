@@ -9,7 +9,7 @@ import lombok.Data;
  * description :
  */
 @Data
-public class UserTeamDto {
+public class MemberTeamDto {
 
     private Long memberId;
     private String username;
@@ -18,7 +18,7 @@ public class UserTeamDto {
     private String teamName;
 
     @QueryProjection
-    public UserTeamDto(Long memberId, String username, int age, Long teamId, String teamName) {
+    public MemberTeamDto(Long memberId, String username, int age, Long teamId, String teamName) {
         this.memberId = memberId;
         this.username = username;
         this.age = age;
