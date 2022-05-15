@@ -11,9 +11,5 @@
         <module name="querydsl.main" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="querydsl.querydsl.main~1" target="11" />
-      <module name="querydsl.querydsl.test~1" target="11" />
-    </bytecodeTargetLevel>
   </component>
 </project>
