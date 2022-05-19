@@ -19,7 +19,6 @@ class QuerydslApplicationTests {
 
     @Autowired
     EntityManager em;
-
     @Test
     void contextLoads() {
         Hello hello = new Hello();
