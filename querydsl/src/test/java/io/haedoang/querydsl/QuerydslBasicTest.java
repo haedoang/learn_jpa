@@ -127,6 +127,39 @@ public class QuerydslBasicTest {
         assertThat(findMember.getUsername()).isEqualTo("member1");
     }
 
+    @Test
+    @DisplayName("조회")
+    public void resultFetch() {
+        // when
+        List<Member> fetch = queryFactory
+                .selectFrom(member)
+                .fetch();
+
+        Member fetchOne = queryFactory
+                .selectFrom(member)
+                .where(member.username.eq("member1"))
+                .fetchOne();
+
+        Member fetchFirst = queryFactory
+                .selectFrom(member)
+                .fetchFirst();
+
+        QueryResults<Member> fetchResults = queryFactory
+                .selectFrom(member)
+                .fetchResults();
+
+        List<Member> content = fetchResults.getResults();
+        long total = fetchResults.getTotal();
+
+        // then
+        assertThat(fetch).hasSize(4).as("다중 조회");
+        assertThat(fetchOne.getUsername()).isEqualTo("member1").as("단건 조회, unique 아닌경우 예외발생");
+        assertThat(fetchFirst.getUsername()).isEqualTo("member1").as("단건 조회 limit 1");
+        assertThat(content).hasSize(4).as("content");
+        assertThat(total).isEqualTo(4).as("전체 크기 조회, query 2번 실행된다");
+
+    }
+
 
     @Test
     @DisplayName("회원 나이 내림차순, 회원 이름 올림차순, 회원 이름이 없으면 마지막에 출력")
@@ -791,7 +824,7 @@ public class QuerydslBasicTest {
 
         // then
         assertThat(result).containsExactly("M1", "M2", "M3", "M4")
-        .as("org.hibernate.dialect.H2Dialect 에 등록되어야 함");
+                .as("org.hibernate.dialect.H2Dialect 에 등록되어야 함");
     }
 
     @Test
