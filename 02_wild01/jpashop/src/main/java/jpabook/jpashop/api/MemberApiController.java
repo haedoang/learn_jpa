@@ -25,8 +25,6 @@ public class MemberApiController {
 
     private final MemberService memberService;
 
-
-
     /***
      * 문제점 : entity가 변경될 시 api 스펙 자체가 변경되버린다.
      *         presentation계층의  검증(@Valid를 통한 Entity 검증)을 entity에서 구현
