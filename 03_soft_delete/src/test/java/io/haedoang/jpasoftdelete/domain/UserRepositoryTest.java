@@ -1,11 +1,13 @@
 package io.haedoang.jpasoftdelete.domain;
 
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
+import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -20,6 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class UserRepositoryTest {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private EntityManager em;
 
     @BeforeEach
     void setUp() {
@@ -54,4 +59,27 @@ class UserRepositoryTest {
         assertThat(updatedAt.isBefore(savedUser.getUpdatedAt()));
     }
 
+    @Test
+    @DisplayName("조회하기")
+    public void findAll() {
+        // when
+        final List<User> users = userRepository.findAll();
+
+        // then
+        assertThat(users).hasSize(1);
+        assertThat(users.get(0).isDeleted()).isFalse();
+    }
+
+    @Test
+    @DisplayName("삭제하기")
+    public void delete() {
+        // given
+        final User savedUser = userRepository.findAll().get(0);
+
+        // when
+        userRepository.delete(savedUser);
+
+        // then
+        assertThat(userRepository.findAll()).hasSize(0);
+    }
 }
