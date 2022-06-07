@@ -3,11 +3,10 @@ package io.haedoang.jpasoftdelete.domain;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.Where;
 
 import javax.persistence.*;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import java.util.Objects;
 
 /**
@@ -33,7 +32,11 @@ public class User extends BaseEntity {
 
     private Integer age;
 
-    private boolean deleted = Boolean.FALSE;
+    //private boolean deleted = Boolean.FALSE;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "team_id")
+    private Team team;
 
     private User(String name, Integer age) {
         this.name = name;
@@ -47,6 +50,10 @@ public class User extends BaseEntity {
     public void update(User updateUser) {
         this.name = updateUser.name;
         this.age = updateUser.age;
+    }
+
+    public void addTeam(Team team) {
+        this.team = team;
     }
 
     @Override

@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
 public abstract class BaseEntity {
+    private boolean deleted = Boolean.FALSE;
+
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;

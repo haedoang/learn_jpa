@@ -67,7 +67,6 @@ class UserRepositoryTest {
 
         // then
         assertThat(users).hasSize(1);
-        assertThat(users.get(0).isDeleted()).isFalse();
     }
 
     @Test
