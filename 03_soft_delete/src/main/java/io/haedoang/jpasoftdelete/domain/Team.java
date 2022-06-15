@@ -39,7 +39,8 @@ public class Team extends BaseEntity {
     }
 
     @OneToMany(mappedBy = "team", cascade = CascadeType.ALL)
-    private List<User> users = new ArrayList<>();
+    @JoinColumn(name = "team_id")
+    private final List<User> users = new ArrayList<>();
 
     public void addUser(User user) {
         this.users.add(user);

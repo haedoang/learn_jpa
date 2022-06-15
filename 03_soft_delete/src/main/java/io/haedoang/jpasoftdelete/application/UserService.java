@@ -26,6 +26,7 @@ public class UserService {
 
     /**
      * 권한에 따라 조회 조건을 부여하기
+     * 단, @Where 애너테이션과 같이 사용할 떄 주의할 것
      * @param isDeleted
      * @return
      */
