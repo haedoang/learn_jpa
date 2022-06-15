@@ -1,0 +1,13 @@
+package io.haedoang.soft_delete.다대일양방향2;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class ApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
