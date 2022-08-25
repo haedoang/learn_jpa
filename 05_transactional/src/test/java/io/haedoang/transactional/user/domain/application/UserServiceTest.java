@@ -53,7 +53,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Required Propagation은 부모/자식 내 예외가 발생할 경우 전체 트랜잭션이 Rollback이 이루어진다")
+    @DisplayName("[REQUIRED] Required Propagation은 부모/자식 내 예외가 발생할 경우 전체 트랜잭션이 Rollback이 이루어진다")
     public void throwChildRollbackByRequiredPropagation() {
         // then
         assertThat(userService.findAll()).hasSize(0);
@@ -68,7 +68,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Requireds New 자식 내 예외가 발생할 경우 부모 트랜잭션과 별개로 동작한다")
+    @DisplayName("[REQUIREDS_NEW] Requireds New 자식 내 예외가 발생할 경우 부모 트랜잭션과 별개로 동작한다")
     public void throwChildByRequiredsNewPropagation() {
         // given
         assertThat(userService.findAll()).hasSize(0);
@@ -84,7 +84,7 @@ class UserServiceTest {
     }
 
     @Test
-    @DisplayName("Requireds New 부모 예외가 발생할 경우 부모 트랜잭션만 Rollback된다")
+    @DisplayName("[REQUIREDS_NEW] Requireds New 부모 예외가 발생할 경우 부모 트랜잭션만 Rollback된다")
     public void throwParentByRequiredsNewPropagation() {
         // given
         assertThat(userService.findAll()).hasSize(0);
@@ -137,8 +137,5 @@ class UserServiceTest {
         // then
         assertThat(couponService.findAll()).hasSize(2);
     }
-
-
-
 }
 

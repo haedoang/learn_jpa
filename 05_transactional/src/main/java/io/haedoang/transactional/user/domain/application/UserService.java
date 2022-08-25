@@ -51,7 +51,7 @@ public class UserService {
     public User savedFailByChildWithRequiredsNewPropagation(SignUpRequest request) {
         User savedUser = userRepository.save(new User(request.getUsername(), request.getPassword()));
         try {
-            couponService.saveRequiredsNew(savedUser.getId());
+            couponService.saveRequiredsNew(null);
         } catch (RuntimeException e) {
             log.error("@throw error: {}", e.getMessage());
         }
@@ -74,7 +74,7 @@ public class UserService {
     public User savedFailByParentWithRequiredsNewPropagation(SignUpRequest request) {
         try {
             userRepository.save(new User(null, null));
-        } catch (RuntimeException e) {
+        } catch (Exception e) {
             log.error("@throw error: {}",  e.getMessage());
         }
 
