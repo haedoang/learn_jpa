@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ParentService {
     private final ParentRepository parentRepository;
 
-    private final BaseChildService childService;
+    private final ChildService childService;
 
     @Transactional(readOnly = true)
     public Long count() {
