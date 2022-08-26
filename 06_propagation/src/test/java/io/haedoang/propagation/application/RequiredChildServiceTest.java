@@ -14,12 +14,12 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * description :
  */
 
-public class RequiredPropagationTest extends BaseApplicationTest {
+public class RequiredChildServiceTest extends BaseApplicationTest {
     @Autowired
     private ParentService parentService;
 
     @Autowired
-    private RequiredChildService requiredChildService;
+    private RequiredChildService childService;
 
     @Test
     @DisplayName("부모, 자식 엔티티를 등록한다")
@@ -29,7 +29,7 @@ public class RequiredPropagationTest extends BaseApplicationTest {
 
         // then
         assertThat(parentService.count()).isEqualTo(1);
-        assertThat(requiredChildService.count()).isEqualTo(1);
+        assertThat(childService.count()).isEqualTo(1);
     }
 
     @Test
@@ -42,7 +42,7 @@ public class RequiredPropagationTest extends BaseApplicationTest {
 
         // then
         assertThat(parentService.count()).isEqualTo(0);
-        assertThat(requiredChildService.count()).isEqualTo(0);
+        assertThat(childService.count()).isEqualTo(0);
     }
 
     /**
@@ -57,6 +57,6 @@ public class RequiredPropagationTest extends BaseApplicationTest {
 
         // then
         assertThat(parentService.count()).isEqualTo(0);
-        assertThat(requiredChildService.count()).isEqualTo(0);
+        assertThat(childService.count()).isEqualTo(0);
     }
 }

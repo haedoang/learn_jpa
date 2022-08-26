@@ -2,7 +2,6 @@ package io.haedoang.propagation.application;
 
 import io.haedoang.propagation.domain.Child;
 import io.haedoang.propagation.infra.ChildRepository;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,19 +12,19 @@ import org.springframework.transaction.annotation.Transactional;
  * description :
  */
 @Service
-public class MandatoryChildService extends ChildService {
+public class NeverChildService extends ChildService {
 
-    public MandatoryChildService(ChildRepository childRepository) {
+    public NeverChildService(ChildRepository childRepository) {
         super(childRepository);
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional(propagation = Propagation.NEVER)
     @Override
     public Child save(Long parentId) {
         return super.save(parentId);
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional(propagation = Propagation.NEVER)
     @Override
     public void saveAndThrowRuntimeException(Long parentId) throws RuntimeException {
         super.saveAndThrowRuntimeException(parentId);

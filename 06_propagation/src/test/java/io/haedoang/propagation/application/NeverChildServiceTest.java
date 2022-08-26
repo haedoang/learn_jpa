@@ -1,30 +1,28 @@
 package io.haedoang.propagation.application;
 
-import io.haedoang.propagation.application.ParentService;
-import io.haedoang.propagation.application.RequiredsNewChildService;
 import io.haedoang.propagation.infra.ParentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * author : haedoang
- * date : 2022-08-25
+ * date : 2022-08-26
  * description :
  */
-public class RequiredsNewPropagationTest extends BaseApplicationTest {
+class NeverChildServiceTest extends BaseApplicationTest {
+
     private ParentService parentService;
 
     @Autowired
     private ParentRepository parentRepository;
 
     @Autowired
-    private RequiredsNewChildService childService;
+    private NeverChildService childService;
 
     @BeforeEach
     void setUp() {
@@ -33,7 +31,7 @@ public class RequiredsNewPropagationTest extends BaseApplicationTest {
     }
 
     @Test
-    @DisplayName("부모, 자식 엔티티를 등록한다 => 부모 자식이 별개의 트랜잭션으로 동작한다(로그확인)")
+    @DisplayName("부모, 자식 엔티티를 등록한다 => 자식 서비스는 트랜잭션 없이 동작한다(로그확인)")
     public void save() {
         // when
         parentService.save();
@@ -44,7 +42,7 @@ public class RequiredsNewPropagationTest extends BaseApplicationTest {
     }
 
     @Test
-    @DisplayName("REQUIREDS_NEW 는 자식 트랜잭션에서 예외가 발생할 경우 자식 트랜잭션만 롤백 처리가 된다")
+    @DisplayName("NEVER는 비트랜잭션으로 동작하여 부분 업데이트 결과로 부분 데이터가 남는다")
     public void saveFailByChildThrowException() {
         // when
         assertThatThrownBy(() -> {
@@ -52,18 +50,18 @@ public class RequiredsNewPropagationTest extends BaseApplicationTest {
         }).isInstanceOf(RuntimeException.class);
 
         // then
-        assertThat(parentService.count()).isEqualTo(1L);
-        assertThat(childService.count()).isEqualTo(0);
+        assertThat(parentService.count()).isEqualTo(1);
+        assertThat(childService.count()).isEqualTo(1);
     }
 
     @Test
-    @DisplayName("REQUIREDS_NEW는 자식 트랜잭션에서 예외를 잡더라도 부모 트랜잭션과 별개로 동작하기 때문에 부모 트랜잭션은 롤백되지 않는다")
+    @DisplayName("자식 서비스에서 예외를 캐치하더라도 비트랜잭션으로 동작하기 때문에 부분 데이터가 남는다")
     public void saveFailByChildThrowExceptionWhenErrorHandling() {
         // when
         parentService.saveFailByChildThrowRuntimeExceptionCatchParentTransaction();
 
         // then
-        assertThat(parentService.count()).isEqualTo(1L);
-        assertThat(childService.count()).isEqualTo(0);
+        assertThat(parentService.count()).isEqualTo(1);
+        assertThat(childService.count()).isEqualTo(1);
     }
 }

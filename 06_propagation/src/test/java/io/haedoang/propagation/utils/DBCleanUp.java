@@ -37,7 +37,6 @@ public class DBCleanUp implements InitializingBean {
                 .collect(toList());
     }
 
-    @Transactional
     public void execute() {
         entityManager.flush();
         entityManager.createNativeQuery("SET REFERENTIAL_INTEGRITY FALSE").executeUpdate();

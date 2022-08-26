@@ -13,7 +13,6 @@ import org.springframework.transaction.annotation.Transactional;
  * date : 2022-08-25
  * description :
  */
-@Slf4j
 @Primary
 @Service
 public class RequiredChildService extends ChildService {
