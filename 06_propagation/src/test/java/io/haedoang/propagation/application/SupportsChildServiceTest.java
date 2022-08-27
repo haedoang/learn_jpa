@@ -15,10 +15,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * description :
  */
 class SupportsChildServiceTest extends BaseApplicationTest {
-    private ParentService parentService;
-
     @Autowired
-    private ParentRepository parentRepository;
+    private ParentService parentService;
 
     @Autowired
     private SupportsChildService childService;
@@ -26,7 +24,7 @@ class SupportsChildServiceTest extends BaseApplicationTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        parentService = new ParentService(parentRepository, childService);
+        parentService.setChildService(childService);
     }
 
     @Test

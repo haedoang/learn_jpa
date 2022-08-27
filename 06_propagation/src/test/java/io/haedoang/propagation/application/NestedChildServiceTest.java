@@ -15,10 +15,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * description : <a href="https://stackoverflow.com/questions/12390888/differences-between-requires-new-and-nested-propagation-in-spring-transactions">PROPAGATION NESTED VS REQUIREDS_NEW</a>
  */
 class NestedChildServiceTest extends BaseApplicationTest {
-    private ParentService parentService;
-
     @Autowired
-    private ParentRepository parentRepository;
+    private ParentService parentService;
 
     @Autowired
     private NestedChildService childService;
@@ -26,7 +24,7 @@ class NestedChildServiceTest extends BaseApplicationTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        parentService = new ParentService(parentRepository, childService);
+        parentService.setChildService(childService);
     }
 
     @Test

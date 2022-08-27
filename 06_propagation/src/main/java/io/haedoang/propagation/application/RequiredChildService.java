@@ -2,6 +2,7 @@ package io.haedoang.propagation.application;
 
 import io.haedoang.propagation.domain.Child;
 import io.haedoang.propagation.infra.ChildRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Service;
@@ -13,23 +14,27 @@ import org.springframework.transaction.annotation.Transactional;
  * date : 2022-08-25
  * description :
  */
-@Primary
+@Slf4j
 @Service
-public class RequiredChildService extends ChildService {
+@RequiredArgsConstructor
+public class RequiredChildService implements ChildService {
+    private final ChildRepository childRepository;
 
-    public RequiredChildService(ChildRepository childRepository) {
-        super(childRepository);
+    @Transactional(readOnly = true)
+    public Long count() {
+        return childRepository.count();
     }
 
     @Transactional(propagation = Propagation.REQUIRED)
-    @Override
     public Child save(Long parentId) {
-        return super.save(parentId);
+        return childRepository.save(new Child(parentId));
     }
 
+
     @Transactional(propagation = Propagation.REQUIRED)
-    @Override
     public void saveAndThrowRuntimeException(Long parentId) throws RuntimeException {
-        super.saveAndThrowRuntimeException(parentId);
+        childRepository.save(new Child(parentId));
+        log.error("throw Error!");
+        throw new RuntimeException("saveAndThrowRuntimeException Error");
     }
 }

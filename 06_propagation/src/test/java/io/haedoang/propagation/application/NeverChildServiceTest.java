@@ -15,11 +15,8 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
  * description :
  */
 class NeverChildServiceTest extends BaseApplicationTest {
-
-    private ParentService parentService;
-
     @Autowired
-    private ParentRepository parentRepository;
+    private ParentService parentService;
 
     @Autowired
     private NeverChildService childService;
@@ -27,9 +24,10 @@ class NeverChildServiceTest extends BaseApplicationTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        parentService = new ParentService(parentRepository, childService);
+        parentService.setChildService(childService);
     }
 
+    //부모가 트랜잭션이 존재해서 터짐
     @Test
     @DisplayName("부모, 자식 엔티티를 등록한다 => 자식 서비스는 트랜잭션 없이 동작한다(로그확인)")
     public void save() {

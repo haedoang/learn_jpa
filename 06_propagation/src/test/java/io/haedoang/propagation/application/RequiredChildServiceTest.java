@@ -1,5 +1,6 @@
 package io.haedoang.propagation.application;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,13 @@ public class RequiredChildServiceTest extends BaseApplicationTest {
 
     @Autowired
     private RequiredChildService childService;
+
+    @Override
+    @BeforeEach
+    void setUp() {
+        super.setUp();
+        parentService.setChildService(childService);
+    }
 
     @Test
     @DisplayName("부모, 자식 엔티티를 등록한다")

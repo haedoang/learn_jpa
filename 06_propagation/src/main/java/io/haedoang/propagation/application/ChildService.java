@@ -12,23 +12,8 @@ import org.springframework.transaction.annotation.Transactional;
  * date : 2022-08-25
  * description :
  */
-@Slf4j
-@RequiredArgsConstructor
-public abstract class ChildService {
-    private final ChildRepository childRepository;
-
-    @Transactional(readOnly = true)
-    public Long count() {
-        return childRepository.count();
-    }
-
-    public Child save(Long parentId) {
-        return childRepository.save(new Child(parentId));
-    }
-
-    public void saveAndThrowRuntimeException(Long parentId) throws RuntimeException {
-        childRepository.save(new Child(parentId));
-        log.error("throw Error!");
-        throw new RuntimeException("saveAndThrowRuntimeException Error");
-    }
+public interface ChildService {
+    Long count();
+    Child save(Long parentId);
+    void saveAndThrowRuntimeException(Long parentId) throws RuntimeException;
 }

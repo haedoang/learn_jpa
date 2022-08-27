@@ -1,13 +1,9 @@
 package io.haedoang.propagation.application;
 
-import io.haedoang.propagation.infra.ParentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * author : haedoang
@@ -16,11 +12,8 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 //FIXME Mandatory 왜 안될까요??
 class MandatoryChildServiceTest extends BaseApplicationTest {
-
-    private ParentService parentService;
-
     @Autowired
-    private ParentRepository parentRepository;
+    private ParentService parentService;
 
     @Autowired
     private MandatoryChildService mandatoryChildService;
@@ -28,7 +21,7 @@ class MandatoryChildServiceTest extends BaseApplicationTest {
     @BeforeEach
     void setUp() {
         super.setUp();
-        parentService = new ParentService(parentRepository, mandatoryChildService);
+        parentService.setChildService(mandatoryChildService);
     }
 
 

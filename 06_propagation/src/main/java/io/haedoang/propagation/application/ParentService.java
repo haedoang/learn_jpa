@@ -5,9 +5,12 @@ import io.haedoang.propagation.domain.Parent;
 import io.haedoang.propagation.infra.ParentRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
 
 /**
  * author : haedoang
@@ -20,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class ParentService {
     private final ParentRepository parentRepository;
 
-    private final ChildService childService;
+    private ChildService childService;
 
     @Transactional(readOnly = true)
     public Long count() {
@@ -50,5 +53,9 @@ public class ParentService {
         } catch (RuntimeException e) {
             log.info("catch Error: {}" , e.getMessage());
         }
+    }
+
+    public void setChildService(ChildService childService) {
+        this.childService = childService;
     }
 }

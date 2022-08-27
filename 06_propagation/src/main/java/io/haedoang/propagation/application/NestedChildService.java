@@ -2,6 +2,8 @@ package io.haedoang.propagation.application;
 
 import io.haedoang.propagation.domain.Child;
 import io.haedoang.propagation.infra.ChildRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,21 +13,27 @@ import org.springframework.transaction.annotation.Transactional;
  * date : 2022-08-26
  * description : 현재 트랜잭션이 있으면 중첩된 트랜잭션 내에서 실행하고, 그렇지 않으면 REQIRED 처럼 동작한다
  */
+@Slf4j
 @Service
-public class NestedChildService extends ChildService {
-    public NestedChildService(ChildRepository childRepository) {
-        super(childRepository);
+@RequiredArgsConstructor
+public class NestedChildService implements ChildService {
+    private final ChildRepository childRepository;
+
+    @Transactional(readOnly = true)
+    public Long count() {
+        return childRepository.count();
     }
 
     @Transactional(propagation = Propagation.NESTED)
-    @Override
     public Child save(Long parentId) {
-        return super.save(parentId);
+        return childRepository.save(new Child(parentId));
     }
 
+
     @Transactional(propagation = Propagation.NESTED)
-    @Override
     public void saveAndThrowRuntimeException(Long parentId) throws RuntimeException {
-        super.saveAndThrowRuntimeException(parentId);
+        childRepository.save(new Child(parentId));
+        log.error("throw Error!");
+        throw new RuntimeException("saveAndThrowRuntimeException Error");
     }
 }
