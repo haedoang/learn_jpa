@@ -39,8 +39,21 @@ public class ParentService {
         return parent;
     }
 
+    public Parent saveWithoutTransaction() {
+        Parent parent = parentRepository.save(new Parent());
+        log.info("savedParent : {}", parent);
+        Child child = childService.save(parent.getId());
+        log.info("savedChild: {}", child);
+        return parent;
+    }
+
     @Transactional
     public void saveFailByChildThrowRuntimeException() {
+        Parent parent = parentRepository.save(new Parent());
+        childService.saveAndThrowRuntimeException(parent.getId());
+    }
+
+    public void saveFailByChildThrowRuntimeExceptionWithoutTransaction() {
         Parent parent = parentRepository.save(new Parent());
         childService.saveAndThrowRuntimeException(parent.getId());
     }

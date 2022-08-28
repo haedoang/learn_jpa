@@ -1,10 +1,10 @@
 package io.haedoang.propagation.application;
 
-import io.haedoang.propagation.infra.ParentRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.IllegalTransactionStateException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -27,12 +27,20 @@ class NeverChildServiceTest extends BaseApplicationTest {
         parentService.setChildService(childService);
     }
 
-    //부모가 트랜잭션이 존재해서 터짐
     @Test
-    @DisplayName("부모, 자식 엔티티를 등록한다 => 자식 서비스는 트랜잭션 없이 동작한다(로그확인)")
-    public void save() {
+    @DisplayName("부모 트랜잭션이 존재하는 경우 예외가 발생한다")
+    public void saveFail() {
+        // when & then
+        assertThatThrownBy(() -> parentService.save())
+                .isInstanceOf(IllegalTransactionStateException.class)
+                .as("상위 트랜잭션이 존재하기 때문에 예외가 발생한다");
+    }
+
+    @Test
+    @DisplayName("부모 트랜잭션이 없는 경우 Non Transaction으로 동작한다")
+    public void saveWithoutTransaction() {
         // when
-        parentService.save();
+        parentService.saveWithoutTransaction();
 
         // then
         assertThat(parentService.count()).isEqualTo(1);
@@ -40,26 +48,15 @@ class NeverChildServiceTest extends BaseApplicationTest {
     }
 
     @Test
-    @DisplayName("NEVER는 비트랜잭션으로 동작하여 부분 업데이트 결과로 부분 데이터가 남는다")
-    public void saveFailByChildThrowException() {
+    @DisplayName("자식 트랜잭션이 비트랜잭션으로 동작하여 예외가 발생해도 더티 데이터가 남는다")
+    public void throwChildException() {
         // when
-        assertThatThrownBy(() -> {
-            parentService.saveFailByChildThrowRuntimeException();
-        }).isInstanceOf(RuntimeException.class);
+        assertThatThrownBy(() -> parentService.saveFailByChildThrowRuntimeExceptionWithoutTransaction())
+                .isInstanceOf(RuntimeException.class);
 
         // then
         assertThat(parentService.count()).isEqualTo(1);
         assertThat(childService.count()).isEqualTo(1);
     }
 
-    @Test
-    @DisplayName("자식 서비스에서 예외를 캐치하더라도 비트랜잭션으로 동작하기 때문에 부분 데이터가 남는다")
-    public void saveFailByChildThrowExceptionWhenErrorHandling() {
-        // when
-        parentService.saveFailByChildThrowRuntimeExceptionCatchParentTransaction();
-
-        // then
-        assertThat(parentService.count()).isEqualTo(1);
-        assertThat(childService.count()).isEqualTo(1);
-    }
 }
